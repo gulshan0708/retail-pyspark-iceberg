@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# Data & Docker volumes
+data/
+minio-data/
+postgres-data/
+
+# Spark
+spark-warehouse/
+metastore_db/
+derby.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+*.rtf
