@@ -85,23 +85,36 @@ class IcebergLoader(BaseLoader):
     def merge_gold(self, df: DataFrame, table: str, key_columns: list[str]) -> None:
         """Idempotent upsert. Source rows must be unique on key_columns,
         otherwise Spark raises a cardinality-violation error."""
+
+        if not key_columns:
+            raise ValueError("key_columns must not be empty")
+
+        missing_columns = set(key_columns) - set(df.columns)
+        if missing_columns:
+            raise ValueError(
+                f"Missing key columns in source: {sorted(missing_columns)}"
+            )
+
+
         self._ensure_namespace(table)
         if not self._table_exists(table):
             self._write(df, table, None, "overwrite")
             return
 
         df.createOrReplaceTempView("merge_source")
-        on_clause = " AND ".join(f"t.{c} <=> s.{c}" for c in key_columns)
-        self.spark.sql(
-            f"""
-            MERGE INTO {self._fq(table)} t
-            USING merge_source s
-            ON {on_clause}
-            WHEN MATCHED THEN UPDATE SET *
-            WHEN NOT MATCHED THEN INSERT *
-            """
-        )
-        self.spark.catalog.dropTempView("merge_source")
+        try:
+            on_clause = " AND ".join(f"t.{c} <=> s.{c}" for c in key_columns)
+            self.spark.sql(
+                f"""
+                MERGE INTO {self._fq(table)} t
+                USING merge_source s
+                ON {on_clause}
+                WHEN MATCHED THEN UPDATE SET *
+                WHEN NOT MATCHED THEN INSERT *
+                """
+            )
+        finally:
+            self.spark.catalog.dropTempView("merge_source")
 
     # ---- time travel / metadata ----
 
