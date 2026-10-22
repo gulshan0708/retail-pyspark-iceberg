@@ -33,6 +33,12 @@ class SparkSessionManager:
                 "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions",
             f"spark.sql.catalog.{self.catalog_name}":
                 "org.apache.iceberg.spark.SparkCatalog",
+            # Iceberg's own S3 access (used when writing table data files)
+            f"spark.sql.catalog.{self.catalog_name}.io-impl":
+                "org.apache.iceberg.aws.s3.S3FileIO",
+            f"spark.sql.catalog.{self.catalog_name}.s3.endpoint":
+                os.environ.get("S3_ENDPOINT", "http://minio:9000"),
+            f"spark.sql.catalog.{self.catalog_name}.s3.path-style-access": "true",
             # S3A: lets plain spark.read/write use s3a:// paths on our storage.
             # The `spark.hadoop.` prefix passes the setting on to Hadoop.
             "spark.hadoop.fs.s3a.endpoint":
