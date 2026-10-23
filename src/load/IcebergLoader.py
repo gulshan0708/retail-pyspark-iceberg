@@ -149,3 +149,8 @@ class IcebergLoader(BaseLoader):
         current = self.spark.table(self._fq(table))
         previous = self.read_as_of(table, snapshot_id=since_snapshot_id)
         return current.exceptAll(previous), previous.exceptAll(current)
+
+    def read_table(self, table: str) -> DataFrame:
+        """Reads an Iceberg table, e.g. read_table("bronze.orders"). 
+        The catalog prefix is added here, so pipelines never hardcode it."""
+        return self.spark.table(self._fq(table))
