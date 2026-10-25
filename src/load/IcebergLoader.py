@@ -132,8 +132,10 @@ class IcebergLoader(BaseLoader):
         if snapshot_id is not None:
             return self.spark.sql(f"SELECT * FROM {fq_name} VERSION AS OF {snapshot_id}")
         if timestamp_ms is not None:
-            # TIMESTAMP AS OF accepts a number of seconds since 1970
-            return self.spark.sql(f"SELECT * FROM {fq_name} TIMESTAMP AS OF {timestamp_ms / 1000}")
+            # Build the seconds value from integers: a float like 1717243200.123
+            # can be off by a microsecond, which could pick the wrong snapshot.
+            seconds = f"{timestamp_ms // 1000}.{timestamp_ms % 1000:03d}"
+            return self.spark.sql(f"SELECT * FROM {fq_name} TIMESTAMP AS OF {seconds}")
         return self.spark.table(fq_name)
 
     def time_travel_report(
