@@ -26,6 +26,7 @@ def explain_text(df) -> str:
 
 def main() -> None:
     conf = {
+        "spark.sql.defaultCatalog": "spark_catalog",         # this image defaults to Iceberg's `demo`; bucketBy needs Spark's own catalog
         "spark.sql.warehouse.dir": WAREHOUSE,                # where saveAsTable puts its files
         "spark.sql.adaptive.enabled": "false",               # keep the printed plan the final plan
         "spark.sql.autoBroadcastJoinThreshold": "-1",        # no broadcast joins: force a sort-merge join
