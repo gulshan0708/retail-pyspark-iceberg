@@ -23,3 +23,4 @@ class PipelineConfig:
     warehouse_path: str = "s3://warehouse/"
     catalog_name: str = "demo"
     source_paths: dict[str, str] = field(default_factory=dict)
+    jdbc_url: str = "jdbc:postgresql://postgres:5432/retail"
