@@ -35,3 +35,14 @@ class Pipeline:
         for step in self._steps:
             df = step.transform(df)
         return df
+
+    @property
+    def steps(self) -> tuple["BaseTransformer", ...]:
+        """Read-only view of the steps. A tuple can't be modified, so callers cannot
+        reorder or remove steps behind the Pipeline's back; use add_step()."""
+        return tuple(self._steps)
+
+    def __len__(self) -> int:
+        """Lets you write len(pipeline). Note: this also makes an empty Pipeline falsy
+        (`if pipeline:` is False when it has no steps)."""
+        return len(self._steps)

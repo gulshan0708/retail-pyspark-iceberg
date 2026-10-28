@@ -4,6 +4,7 @@
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 from src.extract.base import BaseExtractor
+from src.core.decorators import retry
 
 
 class JDBCExtractor(BaseExtractor):
@@ -27,6 +28,7 @@ class JDBCExtractor(BaseExtractor):
         self.user = user
         self.password = password
 
+    @retry(n=3, delay_seconds=5.0)
     def extract(self) -> DataFrame:
         return (
             self.spark.read

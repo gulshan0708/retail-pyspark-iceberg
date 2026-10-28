@@ -2,6 +2,7 @@
 
 from pyspark.sql import DataFrame
 from src.load.base import BaseLoader
+from src.core.decorators import retry
 
 
 class PostgresLoader(BaseLoader):
@@ -22,7 +23,7 @@ class PostgresLoader(BaseLoader):
         df.write.mode(mode).jdbc(
             url=self.jdbc_url, table=target, properties=self._properties
         )
-
+    @retry(n=3, delay_seconds=5.0)
     def export_summary(self, df: DataFrame, table: str) -> None:
         """Refreshes a summary table in Postgres. 'overwrite' + 'truncate'
         keeps the existing table definition and replaces its rows."""

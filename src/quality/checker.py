@@ -96,3 +96,9 @@ class DataQualityChecker:
         bad_count = invalid_rows.count()
         if bad_count > 0:
             raise DataQualityError(f"{message}: {bad_count} invalid row(s) found")
+
+    @property
+    def quarantined_rows(self) -> dict[str, DataFrame]:
+        """Orphan rows found so far, keyed by foreign-key column. Returns a copy, so
+        callers cannot change the checker's internal state."""
+        return dict(self._quarantined_rows)

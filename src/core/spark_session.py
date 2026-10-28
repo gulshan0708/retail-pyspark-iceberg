@@ -48,6 +48,7 @@ class SparkSessionManager:
                 os.environ.get("AWS_ACCESS_KEY_ID", "minioadmin"),
             "spark.hadoop.fs.s3a.secret.key":
                 os.environ.get("AWS_SECRET_ACCESS_KEY", "minioadmin"),
+            "spark.hadoop.fs.s3.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem",
         }
         conf.update(self.extra_conf)  # caller-supplied settings win
         return conf
@@ -75,3 +76,13 @@ class SparkSessionManager:
         app_name = os.environ.get("SPARK_APP_NAME", "retail-pipeline")
         catalog_name = os.environ.get("ICEBERG_CATALOG", "demo")
         return cls(app_name=app_name, catalog_name=catalog_name)
+
+    @property
+    def app_name(self) -> str:
+        return self._app_name
+
+    @app_name.setter
+    def app_name(self, value: str) -> None:
+        if not value or not value.strip():
+            raise ValueError("app_name must not be empty")
+        self._app_name = value
