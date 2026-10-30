@@ -28,7 +28,6 @@ def main() -> None:
         loader.write_bronze(batch(151, 181, 3), events, mode="append")    # snapshot 3:  30 rows
         ids = loader.snapshot_ids(events)
         print("snapshots:", len(ids), "| total rows:", loader.read_table(events).count())
-
         for label, df in [
             ("after snapshot 1, up to snapshot 2", loader.read_incremental(events, ids[0], ids[1])),
             ("after snapshot 2 (to the latest)   ", loader.read_incremental(events, ids[1])),

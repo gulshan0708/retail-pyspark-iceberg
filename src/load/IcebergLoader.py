@@ -310,7 +310,13 @@ class IcebergLoader(BaseLoader):
             f"CALL {self.catalog_name}.system.rewrite_data_files({', '.join(args)})"
         ).first()
         return row.asDict()
-
+    
+    def rewrite_manifests(self, table: str) -> dict:
+        """Merges many small manifest files (the lists that track data files) into fewer,
+        larger ones, so query planning reads less metadata."""
+        row = self.spark.sql(f"CALL {self.catalog_name}.system.rewrite_manifests('{table}')").first()
+        return row.asDict()
+    
     def expire_snapshots(self, table: str, retain_last: int = 1) -> dict:
         """Forgets old snapshots (and deletes files only they used). Time travel to
         an expired snapshot is no longer possible."""

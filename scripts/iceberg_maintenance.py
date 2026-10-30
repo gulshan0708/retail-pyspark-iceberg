@@ -27,6 +27,7 @@ def main() -> None:
         print("result:", loader.compact(table, options={"min-input-files": "2"}))
         print("after: ", describe_files(loader, table), "| snapshot operation:",
               loader.snapshot_summary(table)["operation"])
+        print("manifests:", loader.rewrite_manifests(table))
 
         print("\n=== 2. Sort order: how many files must a filter on country = 'US' read?")
         table = "step10.lines_sorted"
