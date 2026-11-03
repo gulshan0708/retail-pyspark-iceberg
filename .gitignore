@@ -21,3 +21,5 @@ derby.log
 # OS
 .DS_Store
 *.rtf
+
+logs/
