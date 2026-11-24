@@ -1,3 +1,21 @@
+git clone <repo-url> retail-pyspark-iceberg && cd retail-pyspark-iceberg
+python3.11 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+docker compose up -d && docker compose ps
+scripts/setup_data.sh
+scripts/run_pipelines.sh
+scripts/submit.sh scripts/verify_bronze.py
+scripts/submit.sh scripts/verify_silver.py
+scripts/submit.sh scripts/verify_gold.py
+pytest -v
+scripts/test_integration.sh
+
+-------------------------
+
+
+
+
+
 scripts/submit.sh pipelines/pipeline1_ingest.py
 
 scripts/submit.sh scripts/verify_bronze.py
@@ -27,5 +45,10 @@ docker exec -it retail-postgres psql -U postgres -d retail -c "SELECT order_date
 
 
 
+
 --
 python scripts/generate_batch2.py
+
+
+
+docker compose --profile airflow up -d
